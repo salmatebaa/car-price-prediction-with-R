@@ -1,0 +1,264 @@
+```{r}
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(rsample)
+library(tidymodels)
+
+```
+```{r}
+car_data <- read_csv("CarPrice.csv") %>%
+  glimpse()
+```
+
+```{r}
+sapply(car_data, function(x) sum(is.na(x)))
+```
+there is no NA 
+
+
+
+
+```{r}
+#Extracting brand name from car name
+car_data$CarName <- sapply(strsplit(car_data$CarName, " "), `[`, 1)
+car_data$CarName
+```
+
+```{r}
+#Plotting car name to check the distribution
+ggplot(data = car_data, aes(x=CarName, fill = CarName)) +
+  geom_bar() +
+ labs(x= "car Brand", title= "bar graph of car brand") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+
+
+
+```{r}
+ggplot(data = car_data, aes(x=fueltype, fill = fueltype)) +
+  geom_bar() + labs(x="Fuel type") + labs(title = "Bar Graph of Fuel") 
+```
+Most of the cars fall into gas category. Very few cars fall into diesel category .
+
+
+
+```{r}
+
+ggplot(data = car_data, aes(x=carbody, fill = carbody)) +
+  geom_bar() + labs(x='car body') + labs(title = "Bar Graph of car body")  
+  
+
+```
+Most of the cars are sedan .
+
+
+
+
+```{r}
+ggplot(data=car_data, aes(x=doornumber, fill=doornumber ))+
+  geom_bar()+
+  labs(x= "door number", title="Bar Graph of door number")
+```
+
+
+
+
+```{r}
+ggplot(data=car_data, aes(x=enginetype, fill=enginetype ))+
+  geom_bar()+
+  labs(x= "engine type", title="Bar Graph of engine type")
+```
+most of cars are ohc
+
+
+
+
+
+```{r}
+ggplot(car_data, aes(x=horsepower, y=peakrpm)) +
+  geom_point()
+```
+
+
+
+```{r}
+ggplot(car_data, aes(x=price)) + 
+  geom_histogram(bins=20, colour="white", fill="steelblue")+
+  labs(x='Selling Price ') + labs(title = "Histogram Graph of Selling Price") 
+```
+
+
+
+the mean of engine size  ?
+```{r}
+car_data%>%
+  group_by(CarName)%>%
+  summarise(mean=mean(enginesize))
+```
+
+
+nombre de véhicules par fueltype 
+
+```{r}
+car_data %>%
+  group_by(fueltype) %>%
+  summarize(n())
+```
+
+
+
+what cars have an ohc engine?
+
+```{r}
+car_data%>%
+  filter(enginetype=="ohc")%>%
+  select(CarName, car_ID)
+```
+
+
+
+
+sorting cars from more expensive to more cheaper 
+```{r}
+car_data%>%
+  group_by(CarName)%>%
+  arrange(desc(price))%>%
+  select(car_ID, fueltype, price)
+```
+
+
+
+
+Regroupement de nombre de voitures par nom 
+
+```{r}
+car_data %>% 
+  group_by(CarName) %>% 
+  summarise(num_car=n()) %>%
+  arrange(desc(num_car))
+```
+Toyota est la marque ayant le plus grand nombre de voiture dans notre dataset 
+
+
+
+étudions la relation entre l'emplacement du moteur et son type
+```{r}
+car_data %>% 
+  filter(enginelocation== "front") %>% 
+  group_by(enginelocation, enginetype) %>% 
+  summarize(number=n()) 
+  #mutate(pourcentage=round (number/sum(number), 2) * 100)
+```
+les voitures ayant le moteur devant possédent généralement un type ohc
+
+
+
+```{r}
+car_data$CarName <- str_replace(car_data$CarName, 'alfa-romero', '0')
+car_data$CarName <- str_replace(car_data$CarName, 'bmw', '1')
+car_data$CarName <- str_replace(car_data$CarName, 'audi', '2')
+car_data$CarName <- str_replace(car_data$CarName, 'buick', '3')
+car_data$CarName <- str_replace(car_data$CarName, 'chevrolet', '4')
+car_data$CarName <- str_replace(car_data$CarName, 'dodge', '5')
+car_data$CarName <- str_replace(car_data$CarName, 'honda', '6')
+car_data$CarName <- str_replace(car_data$CarName, 'isuzu', '7')
+car_data$CarName <- str_replace(car_data$CarName, 'jaguar', '8')
+car_data$CarName <- str_replace(car_data$CarName, 'maxda', '9')
+car_data$CarName <- str_replace(car_data$CarName, 'mazda', '10')
+car_data$CarName <- str_replace(car_data$CarName, 'mercury', '11')
+car_data$CarName <- str_replace(car_data$CarName, 'mitsubishi', '12')
+car_data$CarName <- str_replace(car_data$CarName, 'nissan', '13')
+car_data$CarName <- str_replace(car_data$CarName, 'volkswagen', '14')
+car_data$CarName <- str_replace(car_data$CarName, 'peugeot', '15')
+car_data$CarName <- str_replace(car_data$CarName, 'plymouth', '16')
+car_data$CarName <- str_replace(car_data$CarName, 'porsche', '17')
+car_data$CarName <- str_replace(car_data$CarName, 'porcshce', '18')
+car_data$CarName <- str_replace(car_data$CarName, 'renault', '19')
+car_data$CarName <- str_replace(car_data$CarName, 'saab', '20')
+car_data$CarName <- str_replace(car_data$CarName, 'subaru', '21')
+car_data$CarName <- str_replace(car_data$CarName, 'toyota', '22')
+car_data$CarName <- str_replace(car_data$CarName, 'vw', '23')
+car_data$CarName <- str_replace(car_data$CarName, 'volvo', '24')
+car_data$CarName <- str_replace(car_data$CarName, 'toyouta', '25')
+car_data$CarName <- str_replace(car_data$CarName, 'vokswagen', '26')
+car_data$CarName <- str_replace(car_data$CarName, 'Nissan', '27')
+
+#Converting car name from categorical to numerical value
+
+car_data$CarName<- as.numeric(car_data$CarName)
+table(car_data$CarName)
+```
+splitting the data into training and testing
+
+
+building model :
+
+
+```{r}
+lm_spec <-linear_reg() %>% 
+set_engine(engine ="lm") 
+
+```
+
+```{r}
+set.seed(100)
+new_split <- initial_split(car_data)
+new_train <- training(new_split)
+new_test <- testing(new_split)
+
+lm_fit <- lm_spec %>%
+fit(price ~ CarName+horsepower+enginesize+peakrpm+highwaympg+citympg, data = new_train)
+price_pred <- lm_fit %>%
+predict(new_data = new_test) %>%
+mutate(price_truth = new_test$price)
+price_pred
+
+```
+```{r}
+rmse(price_pred, truth = price_truth, estimate = .pred)
+```
+
+
+
+model 2 decision tree : 
+
+
+```{r}
+
+rt_spec <- decision_tree() %>%
+set_engine("rpart") %>%
+set_mode("regression")
+
+rt_fit <- rt_spec %>%
+fit(price ~ CarName+horsepower+enginesize+peakrpm+highwaympg+citympg, data = new_train)
+price_pred <- rt_fit%>%
+predict(new_test) %>%
+mutate(truth = new_test$price) 
+price_pred 
+
+rmse(price_pred, truth, .pred)
+
+
+```
+
+model 3 random forest :
+
+
+```{r}
+rt_spec <- rand_forest() %>%
+set_engine("ranger") %>%
+set_mode("regression")
+
+rt_fit <- rt_spec %>%
+fit(price ~ CarName+horsepower+enginesize+peakrpm+highwaympg+citympg, data = new_train)
+price_pred <- rt_fit%>%
+predict(new_test) %>%
+mutate(truth = new_test$price) 
+price_pred 
+
+
+rmse(price_pred, truth, .pred)
+```
+Nous allons sélectionner le modèle produit par l’algorithme random forest, car plus le RMSE est petit, plus la capacité du modèle à distinguer la variabilité de la prédiction 
